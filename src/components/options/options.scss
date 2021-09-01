@@ -1,0 +1,35 @@
+.optionsContainer {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+
+}
+
+.blocksContainer {
+    display: flex;
+    flex-direction: row !important;
+    margin-left: 40px;
+}
+
+.blockLabel {
+    display: flex;
+    flex-direction: column;
+    margin-right: 100px !important;
+}
+
+.dropdownContainer {
+    align-self: center;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.clearButton {
+    width: fit-content;
+    background-color: red !important;
+    margin: 20px 30px 20px 0 !important;
+}

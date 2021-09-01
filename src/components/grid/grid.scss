@@ -1,0 +1,62 @@
+$square-dim: 30px;
+
+.gridContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gridButton {
+    width: fit-content;
+    background-color: #15e743 !important;
+    margin-bottom: 20px !important;
+}
+
+.gridRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.gridItem {
+    display: flex;
+
+    border: 1px solid black;
+    height: $square-dim;
+    width: $square-dim;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgb(226, 224, 224);
+    }
+
+}
+
+.gridStart {
+    background-color: lightgreen !important;
+}
+
+.gridObstacle {
+    background-color: red !important;
+}
+
+.gridEnd {
+    background-color: green !important;
+}
+
+.gridToVisit {
+    background-color: yellow !important;
+}
+
+.gridVisited {
+    background-color: blue !important;
+}
+
+.gridPath {
+    background-color: gold !important;
+}
+
+.gridStatus {
+    margin-top: 10px;
+    font-family: cursive;
+    font-size: 20px;
+}
