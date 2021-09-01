@@ -50,7 +50,11 @@ const traceParents = (start, end, parent, maxRows, maxCols) => {
         console.log(cur, curCoor);
         path.unshift(curCoor);
     }
-    return path;
+    // number all coordinates
+    let retPath = path.map((coor, idx) => {
+        return { row: coor.row, col: coor.col, value: idx }
+    });
+    return retPath;
 }
 
 export const bfs = async (start, end, obstacles, maxRows, maxCols, setVisited, setToVisit) => {

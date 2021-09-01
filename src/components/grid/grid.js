@@ -22,7 +22,26 @@ const Grid = ({
     const [numRows, setNumRows] = useState(1);
     const [numCols, setNumCols] = useState(1);
 
+    // error display
+    const [errors, setErrors] = useState({});
+
+    const validatePoints = () => {
+        let newErrors = {};
+        let isValid = true;
+        if (start.row < 0 || start.col < 0) {
+            newErrors.start = "Enter a valid starting point.";
+            isValid = false;
+        }
+        if (end.row < 0 || end.col < 0) {
+            newErrors.end = "Enter a valid endpoint.";
+            isValid = false;
+        }
+        setErrors({ ...newErrors });
+        return isValid;
+    }
+
     const findPath = async () => {
+        if (!validatePoints()) return;
         let path;
         switch (pathfinder) {
             case PATHFINDERS.BFS:
@@ -39,21 +58,22 @@ const Grid = ({
         console.log(path);
     }
 
-    useEffect(() => {
-        // console.log(visited, toVisit);
-    }, [visited, toVisit]);
-
     // add block based on what block type is selected
     const setBlock = (rowIdx, colIdx) => {
         const newBlock = { row: rowIdx, col: colIdx };
         switch (blockType) {
             case BLOCK_TYPES.START:
+                if (end.row === rowIdx && end.col === colIdx) break;
                 setStart(newBlock);
                 break;
             case BLOCK_TYPES.END:
+                if (start.row === rowIdx && start.col === colIdx) break;
                 setEnd(newBlock);
                 break;
             case BLOCK_TYPES.OBSTACLE:
+                // make sure not to overwrite exisitng start/end block
+                if (start.row === rowIdx && start.col === colIdx) break;
+                if (end.row === rowIdx && end.col === colIdx) break;
                 setObstacles(obstacles.concat(newBlock));
                 break;
             default:
@@ -64,7 +84,7 @@ const Grid = ({
     // determine which kind of block to display
     const displayBlock = (rowIdx, colIdx) => {
         let classes = "gridItem ";
-        // start
+        let val;
         if (rowIdx === start.row && colIdx === start.col) {
             classes += "gridStart";
         }
@@ -90,12 +110,17 @@ const Grid = ({
             for (let v of truePath) {
                 if (rowIdx === v.row && colIdx === v.col) {
                     classes = "gridItem gridPath";
+                    val = v.value || "";
                     break;
                 }
             }
         }
 
-        return <div className={classes} key={colIdx} onClick={() => setBlock(rowIdx, colIdx)} />;
+        return (
+            <div className={classes} key={colIdx} onClick={() => setBlock(rowIdx, colIdx)}>
+                {val}
+            </div>
+        );
     }
 
     // calculate number of rows and columns
@@ -129,9 +154,11 @@ const Grid = ({
                 </div>
             ))}
 
-            <span className="gridStatus">
-                Enter a starting point
-            </span>
+            {errors !== {} && (
+                <span className="gridStatus">
+                    {errors[Object.keys(errors)[0]]}
+                </span>
+            )}  
         </div>
     )
 }

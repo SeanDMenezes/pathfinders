@@ -19,6 +19,9 @@ $square-dim: 30px;
 
 .gridItem {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 
     border: 1px solid black;
     height: $square-dim;
@@ -48,7 +51,7 @@ $square-dim: 30px;
 }
 
 .gridVisited {
-    background-color: blue !important;
+    background-color: rgb(108, 108, 240) !important;
 }
 
 .gridPath {
@@ -58,5 +61,6 @@ $square-dim: 30px;
 .gridStatus {
     margin-top: 10px;
     font-family: cursive;
+    color: rgb(235, 59, 59);
     font-size: 20px;
 }
