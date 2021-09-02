@@ -10,6 +10,7 @@ const BOX_SIZE = 20;
 const Grid = ({ 
     blockType,
     pathfinder,
+    clearPath,
     start, setStart,
     end, setEnd,
     obstacles, setObstacles,
@@ -24,6 +25,9 @@ const Grid = ({
 
     // error display
     const [errors, setErrors] = useState({});
+
+    // in process of finding path?
+    const [searching, setSearching] = useState(false);
 
     const validatePoints = () => {
         let newErrors = {};
@@ -42,18 +46,22 @@ const Grid = ({
 
     const findPath = async () => {
         if (!validatePoints()) return;
+        clearPath();
         let path;
         switch (pathfinder) {
             case PATHFINDERS.BFS:
+                setSearching(true);
                 path = await bfs(start, end, obstacles, numRows, numCols, setVisited, setToVisit);
                 break;
             case PATHFINDERS.DFS:
+                setSearching(true);
                 path = await dfs(start, end, obstacles, numRows, numCols, setVisited, setToVisit);
                 break;
             default:
                 break;
 
         }
+        setSearching(false);
         setTruePath(path);
         console.log(path);
     }
@@ -145,7 +153,7 @@ const Grid = ({
             <Button className="gridButton" onClick={findPath}>
                 Go!
             </Button>
-            {numRows >=0 && numCols >= 0 &&
+            {numRows >= 0 && numCols >= 0 &&
             [...Array(numRows)].map((rowVal, rowIdx) => (
                 <div className="gridRow" key={rowIdx}>
                     {[...Array(numCols)].map((colVal, colIdx) => (
@@ -158,7 +166,8 @@ const Grid = ({
                 <span className="gridStatus">
                     {errors[Object.keys(errors)[0]]}
                 </span>
-            )}  
+            )}
+            {searching && <span> Searching... </span>}
         </div>
     )
 }

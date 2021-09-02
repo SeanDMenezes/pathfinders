@@ -29,6 +29,10 @@ const Options = ({ blockType, setBlockType, pathfinder, setPathfinder, clearObst
                 <FormControlLabel value={BLOCK_TYPES.OBSTACLE} control={<Radio />} label="Obstacle" className="blockLabel"/>
             </RadioGroup>
 
+            <Button className="randomButton">
+                Randomize
+            </Button>
+
             <div className="dropdownContainer">
                 <Select
                     native

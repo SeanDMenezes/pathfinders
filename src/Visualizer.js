@@ -53,18 +53,13 @@ const Visualizer = () => {
             <Grid
                 blockType={blockType}
                 pathfinder={pathfinder}
-                start={start}
-                setStart={setStart}
-                end={end}
-                setEnd={setEnd}
-                obstacles={obstacles}
-                setObstacles={setObstacles}
-                visited={visited}
-                setVisited={setVisited}
-                toVisit={toVisit}
-                setToVisit={setToVisit}
-                truePath={truePath}
-                setTruePath={setTruePath}
+                clearPath={clearPath}
+                start={start} setStart={setStart}
+                end={end} setEnd={setEnd}
+                obstacles={obstacles} setObstacles={setObstacles}
+                visited={visited} setVisited={setVisited}
+                toVisit={toVisit} setToVisit={setToVisit}
+                truePath={truePath} setTruePath={setTruePath}
             />
         </div>
     )
