@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; //where we want to store our reducer
+import storage from 'redux-persist/lib/storage'; // where we want to store our reducer
 
 import blockReducer from './block/block-reducer';
 import optionsReducer from './options/options-reducer';

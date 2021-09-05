@@ -10,9 +10,9 @@ import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
 import { selectOptions } from "../../redux/options/options-selector";
 import { setBlockType, setPathfinder } from "../../redux/options/options-actions";
-import { clearAll, clearObstacles, clearPath } from "../../redux/block/block-actions";
+import { clearAll, clearObstacles, clearPath, randomizeObstacles } from "../../redux/block/block-actions";
 
-const Options = ({ options, setBlockType, setPathfinder, clearObstacles, clearPath, clearAll }) => {
+const Options = ({ options, setBlockType, setPathfinder, clearObstacles, clearPath, clearAll, randomizeObstacles }) => {
 
     const handleBlockChange = (e) => {
         setBlockType(e.target.value);
@@ -36,7 +36,7 @@ const Options = ({ options, setBlockType, setPathfinder, clearObstacles, clearPa
                 <FormControlLabel value={BLOCK_TYPES.OBSTACLE} control={<Radio />} label="Obstacle" className="blockLabel"/>
             </RadioGroup>
 
-            <Button className="randomButton">
+            <Button onClick={randomizeObstacles} className="randomButton">
                 Randomize
             </Button>
 
@@ -72,7 +72,8 @@ const mapDispatch = dispatch => ({
     setPathfinder: pathfinder => dispatch(setPathfinder(pathfinder)),
     clearObstacles: () => dispatch(clearObstacles()),
     clearPath: () => dispatch(clearPath()),
-    clearAll: () => dispatch(clearAll())
+    clearAll: () => dispatch(clearAll()),
+    randomizeObstacles: () => dispatch(randomizeObstacles())
 });
 
 const mapState = createStructuredSelector({

@@ -58,9 +58,9 @@ const traceParents = (start, end, parent, maxRows, maxCols) => {
     return retPath;
 }
 
-export const bfs = async (maxRows, maxCols) => {
+export const bfs = async () => {
     const { blocks } = store.getState();
-    const { start, end, obstacles } = blocks;
+    const { start, end, obstacles, numRows, numCols } = blocks;
 
     // assuming visited and toVisit are both initially empty
     let visited = [start];
@@ -71,15 +71,15 @@ export const bfs = async (maxRows, maxCols) => {
         let u = toVisit.shift();
         if (u.row === end.row && u.col === end.col) {
             store.dispatch(setToVisit({ row: -1, col: -1 }));
-            return traceParents(start, u, parent, maxRows, maxCols);
+            return traceParents(start, u, parent, numRows, numCols);
         }
         store.dispatch(setToVisit(u));
-        let neighbors = getNeighbors(u, maxRows, maxCols, obstacles);
+        let neighbors = getNeighbors(u, numRows, numCols, obstacles);
         for (let v of neighbors) {
             if (!isVisited(v, visited)) {
                 toVisit.push(v);
                 visited.push(v);
-                parent[maxCols * v.row + v.col] = maxCols * u.row + u.col;
+                parent[numCols * v.row + v.col] = numCols * u.row + u.col;
             }
             await new Promise(resolve => setTimeout(resolve, 1));
         }
@@ -88,9 +88,9 @@ export const bfs = async (maxRows, maxCols) => {
     return [];
 }
 
-export const dfs = async (maxRows, maxCols) => {
+export const dfs = async () => {
     const { blocks } = store.getState();
-    const { start, end, obstacles } = blocks;
+    const { start, end, obstacles, numRows, numCols } = blocks;
 
     // assuming visited and toVisit are both initially empty
     let visited = [start];
@@ -101,18 +101,18 @@ export const dfs = async (maxRows, maxCols) => {
         let u = toVisit.shift();
         if (u.row === end.row && u.col === end.col) {
             store.dispatch(setToVisit({ row: -1, col: -1 }));
-            return traceParents(start, u, parent, maxRows, maxCols);
+            return traceParents(start, u, parent, numRows, numCols);
         }
         store.dispatch(setToVisit(u));
         
         if (!isVisited(u, visited)) {
             visited.push(u);
         }
-        let neighbors = getNeighbors(u, maxRows, maxCols, obstacles);
+        let neighbors = getNeighbors(u, numRows, numCols, obstacles);
         for (let v of neighbors) {
             if (!isVisited(v, visited)) {
                 toVisit.unshift(v);
-                parent[maxCols * v.row + v.col] = maxCols * u.row + u.col;
+                parent[numCols * v.row + v.col] = numCols * u.row + u.col;
             }
             await new Promise(resolve => setTimeout(resolve, 1));
         }

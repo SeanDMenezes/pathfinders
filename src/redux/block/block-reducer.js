@@ -1,6 +1,8 @@
 import { BLOCK_ACTION_TYPES } from "./block-types";
 
 const INITIAL_STATE = {
+    numRows: 10,
+    numCols: 10,
     start: { row: 0, col: 0 },
     end: { row: 2, col: 2 },
     obstacles: [],
@@ -11,6 +13,16 @@ const INITIAL_STATE = {
 
 const blockReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
+        case BLOCK_ACTION_TYPES.SET_NUM_ROWS:
+            return {
+                ...state,
+                numRows: action.payload
+            }
+        case BLOCK_ACTION_TYPES.SET_NUM_COLS:
+            return {
+                ...state,
+                numCols: action.payload
+            }
         case BLOCK_ACTION_TYPES.SET_START:
             return {
                 ...state,
@@ -56,8 +68,16 @@ const blockReducer = (state = INITIAL_STATE, action) => {
                 truePath
             }
         case BLOCK_ACTION_TYPES.CLEAR_ALL:
+            const { numRows, numCols } = state;
             return {
-                ...INITIAL_STATE
+                ...INITIAL_STATE,
+                numRows,
+                numCols
+            }
+        case BLOCK_ACTION_TYPES.RANDOMIZE_OBSTACLES:
+            return {
+                ...state,
+                obstacles: action.payload
             }
         default:
             return {

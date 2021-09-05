@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 
 import "./grid.scss";
+
+// helpers
 import { BLOCK_TYPES, PATHFINDERS } from "../../util/blocks";
 import { bfs, dfs } from "../../util/pathfinders";
 
@@ -12,13 +14,7 @@ import { selectOptions } from "../../redux/options/options-selector";
 import { addObstacle, clearPath, setEndBlock, setStartBlock, setToVisit, setTruePath, setVisited } from "../../redux/block/block-actions";
 import { selectBlocks } from "../../redux/block/block-selector";
 
-const BOX_SIZE = 20;
-
 const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTruePath }) => {
-    // grid display
-    const [numRows, setNumRows] = useState(1);
-    const [numCols, setNumCols] = useState(1);
-
     // error display
     const [errors, setErrors] = useState({});
 
@@ -48,11 +44,11 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         switch (options.pathfinder) {
             case PATHFINDERS.BFS:
                 setSearching(true);
-                path = await bfs(numRows, numCols);
+                path = await bfs();
                 break;
             case PATHFINDERS.DFS:
                 setSearching(true);
-                path = await dfs(numRows, numCols);
+                path = await dfs();
                 break;
             default:
                 break;
@@ -130,22 +126,7 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         );
     }
 
-    // calculate number of rows and columns
-    const getWindowDimensions = () => {
-        const { innerWidth: width, innerHeight: height } = window;
-        setNumRows(Math.max(
-            Math.floor((height - 400) / BOX_SIZE),
-            10
-        ));
-        setNumCols(Math.max(
-            Math.floor((width - 580) / BOX_SIZE),
-            0
-        ));
-    }
-
-    useEffect(() => {
-        getWindowDimensions();
-    }, []);
+    const { numRows, numCols } = blocks;
 
     return (
         <div className="gridContainer">
