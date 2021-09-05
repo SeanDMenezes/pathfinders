@@ -5,7 +5,14 @@ import { BLOCK_TYPES, PATHFINDERS } from "../../util/blocks";
 // css
 import "./options.scss";
 
-const Options = ({ blockType, setBlockType, pathfinder, setPathfinder, clearObstacles, clearPath, clearAll }) => {
+// redux
+import { createStructuredSelector } from "reselect";
+import { connect } from "react-redux";
+import { selectOptions } from "../../redux/options/options-selector";
+import { setBlockType, setPathfinder } from "../../redux/options/options-actions";
+import { clearAll, clearObstacles, clearPath } from "../../redux/block/block-actions";
+
+const Options = ({ options, setBlockType, setPathfinder, clearObstacles, clearPath, clearAll }) => {
 
     const handleBlockChange = (e) => {
         setBlockType(e.target.value);
@@ -21,7 +28,7 @@ const Options = ({ blockType, setBlockType, pathfinder, setPathfinder, clearObst
                 aria-label="blockType"
                 name="blocks"
                 className="blocksContainer"
-                value={blockType}
+                value={options.blockType}
                 onChange={(e) => handleBlockChange(e)}
             >
                 <FormControlLabel value={BLOCK_TYPES.START} control={<Radio />} label="Start" className="blockLabel"/>
@@ -36,7 +43,7 @@ const Options = ({ blockType, setBlockType, pathfinder, setPathfinder, clearObst
             <div className="dropdownContainer">
                 <Select
                     native
-                    value={pathfinder}
+                    value={options.pathfinder}
                     onChange={(e) => handlePathfinderChange(e)}
                 >
                     <option value={PATHFINDERS.BFS}> BFS (Breadth First Search) </option>
@@ -59,4 +66,17 @@ const Options = ({ blockType, setBlockType, pathfinder, setPathfinder, clearObst
     )
 }
 
-export default Options;
+// redux
+const mapDispatch = dispatch => ({
+    setBlockType: blockType => dispatch(setBlockType(blockType)),
+    setPathfinder: pathfinder => dispatch(setPathfinder(pathfinder)),
+    clearObstacles: () => dispatch(clearObstacles()),
+    clearPath: () => dispatch(clearPath()),
+    clearAll: () => dispatch(clearAll())
+});
+
+const mapState = createStructuredSelector({
+    options: selectOptions,
+});
+
+export default connect(mapState, mapDispatch)(Options);
