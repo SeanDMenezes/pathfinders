@@ -5,20 +5,16 @@ import "./grid.scss";
 import { BLOCK_TYPES, PATHFINDERS } from "../../util/blocks";
 import { bfs, dfs } from "../../util/pathfinders";
 
+// redux
+import { createStructuredSelector } from "reselect";
+import { connect } from "react-redux";
+import { selectOptions } from "../../redux/options/options-selector";
+import { addObstacle, clearPath, setEndBlock, setStartBlock, setToVisit, setTruePath, setVisited } from "../../redux/block/block-actions";
+import { selectBlocks } from "../../redux/block/block-selector";
+
 const BOX_SIZE = 20;
 
-const Grid = ({ 
-    blockType,
-    pathfinder,
-    clearPath,
-    start, setStart,
-    end, setEnd,
-    obstacles, setObstacles,
-    visited, setVisited,
-    toVisit, setToVisit,
-    truePath, setTruePath
-}) => {
-
+const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTruePath }) => {
     // grid display
     const [numRows, setNumRows] = useState(1);
     const [numCols, setNumCols] = useState(1);
@@ -30,6 +26,7 @@ const Grid = ({
     const [searching, setSearching] = useState(false);
 
     const validatePoints = () => {
+        const { start, end } = blocks;
         let newErrors = {};
         let isValid = true;
         if (start.row < 0 || start.col < 0) {
@@ -48,14 +45,14 @@ const Grid = ({
         if (!validatePoints()) return;
         clearPath();
         let path;
-        switch (pathfinder) {
+        switch (options.pathfinder) {
             case PATHFINDERS.BFS:
                 setSearching(true);
-                path = await bfs(start, end, obstacles, numRows, numCols, setVisited, setToVisit);
+                path = await bfs(numRows, numCols);
                 break;
             case PATHFINDERS.DFS:
                 setSearching(true);
-                path = await dfs(start, end, obstacles, numRows, numCols, setVisited, setToVisit);
+                path = await dfs(numRows, numCols);
                 break;
             default:
                 break;
@@ -68,8 +65,9 @@ const Grid = ({
 
     // add block based on what block type is selected
     const setBlock = (rowIdx, colIdx) => {
+        const { start, end } = blocks;
         const newBlock = { row: rowIdx, col: colIdx };
-        switch (blockType) {
+        switch (options.blockType) {
             case BLOCK_TYPES.START:
                 if (end.row === rowIdx && end.col === colIdx) break;
                 setStart(newBlock);
@@ -82,7 +80,7 @@ const Grid = ({
                 // make sure not to overwrite exisitng start/end block
                 if (start.row === rowIdx && start.col === colIdx) break;
                 if (end.row === rowIdx && end.col === colIdx) break;
-                setObstacles(obstacles.concat(newBlock));
+                addObstacle(newBlock);
                 break;
             default:
                 break;
@@ -91,6 +89,7 @@ const Grid = ({
 
     // determine which kind of block to display
     const displayBlock = (rowIdx, colIdx) => {
+        const { start, end, obstacles, toVisit, visited, truePath } = blocks;
         let classes = "gridItem ";
         let val;
         if (rowIdx === start.row && colIdx === start.col) {
@@ -172,4 +171,20 @@ const Grid = ({
     )
 }
 
-export default Grid;
+// redux
+const mapState = createStructuredSelector({
+    options: selectOptions,
+    blocks: selectBlocks
+});
+
+const mapDispatch = dispatch => ({
+    setStart: start => dispatch(setStartBlock(start)),
+    setEnd: end => dispatch(setEndBlock(end)),
+    addObstacle: obstacle => dispatch(addObstacle(obstacle)),
+    setVisited: visited => dispatch(setVisited(visited)),
+    setToVisit: toVisit => dispatch(setToVisit(toVisit)),
+    setTruePath: truePath => dispatch(setTruePath(truePath)),
+    clearPath: () => dispatch(clearPath())
+});
+
+export default connect(mapState, mapDispatch)(Grid);

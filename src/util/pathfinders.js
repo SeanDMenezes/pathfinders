@@ -1,3 +1,6 @@
+import { setToVisit, setVisited } from "../redux/block/block-actions";
+import { store } from "../redux/store";
+
 const isVisited = (vertex, visited) => {
     for (let v of visited) {
         if (v.row === vertex.row && v.col === vertex.col) {
@@ -42,12 +45,10 @@ const traceParents = (start, end, parent, maxRows, maxCols) => {
     let dest = maxCols * end.row + end.col
     let cur = dest;
     let curCoor = { row: Math.floor(cur / maxCols), col: cur - (Math.floor(cur / maxCols) * maxCols) };
-    console.log(cur, curCoor, maxCols);
     path.unshift(curCoor);
     while (!(curCoor.row === start.row && curCoor.col === start.col)) {
         cur = parent[cur];
         curCoor = { row: Math.floor(cur / maxCols), col: cur - (Math.floor(cur / maxCols) * maxCols) };
-        console.log(cur, curCoor);
         path.unshift(curCoor);
     }
     // number all coordinates
@@ -57,7 +58,10 @@ const traceParents = (start, end, parent, maxRows, maxCols) => {
     return retPath;
 }
 
-export const bfs = async (start, end, obstacles, maxRows, maxCols, setVisited, setToVisit) => {
+export const bfs = async (maxRows, maxCols) => {
+    const { blocks } = store.getState();
+    const { start, end, obstacles } = blocks;
+
     // assuming visited and toVisit are both initially empty
     let visited = [start];
     let toVisit = [start];
@@ -66,11 +70,10 @@ export const bfs = async (start, end, obstacles, maxRows, maxCols, setVisited, s
     while (toVisit.length !== 0) {
         let u = toVisit.shift();
         if (u.row === end.row && u.col === end.col) {
-            console.log("found!", u, end);
-            setToVisit({ row: -1, col: -1 });
+            store.dispatch(setToVisit({ row: -1, col: -1 }));
             return traceParents(start, u, parent, maxRows, maxCols);
         }
-        setToVisit(u);
+        store.dispatch(setToVisit(u));
         let neighbors = getNeighbors(u, maxRows, maxCols, obstacles);
         for (let v of neighbors) {
             if (!isVisited(v, visited)) {
@@ -80,12 +83,15 @@ export const bfs = async (start, end, obstacles, maxRows, maxCols, setVisited, s
             }
             await new Promise(resolve => setTimeout(resolve, 1));
         }
-        setVisited(visited);
+        store.dispatch(setVisited(visited));
     }
     return [];
 }
 
-export const dfs = async (start, end, obstacles, maxRows, maxCols, setVisited, setToVisit) => {
+export const dfs = async (maxRows, maxCols) => {
+    const { blocks } = store.getState();
+    const { start, end, obstacles } = blocks;
+
     // assuming visited and toVisit are both initially empty
     let visited = [start];
     let toVisit = [start];
@@ -94,11 +100,11 @@ export const dfs = async (start, end, obstacles, maxRows, maxCols, setVisited, s
     while (toVisit.length !== 0) {
         let u = toVisit.shift();
         if (u.row === end.row && u.col === end.col) {
-            console.log("found!", u, end);
-            setToVisit({ row: -1, col: -1 });
+            store.dispatch(setToVisit({ row: -1, col: -1 }));
             return traceParents(start, u, parent, maxRows, maxCols);
         }
-        setToVisit(u);
+        store.dispatch(setToVisit(u));
+        
         if (!isVisited(u, visited)) {
             visited.push(u);
         }
@@ -106,12 +112,11 @@ export const dfs = async (start, end, obstacles, maxRows, maxCols, setVisited, s
         for (let v of neighbors) {
             if (!isVisited(v, visited)) {
                 toVisit.unshift(v);
-                // visited.push(v);
                 parent[maxCols * v.row + v.col] = maxCols * u.row + u.col;
             }
             await new Promise(resolve => setTimeout(resolve, 1));
         }
-        setVisited(visited);
+        store.dispatch(setVisited(visited));
     }
     return [];
 }
