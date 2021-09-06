@@ -5,7 +5,7 @@ import "./grid.scss";
 
 // helpers
 import { BLOCK_TYPES, PATHFINDERS } from "../../util/blocks";
-import { bfs, dfs } from "../../util/pathfinders";
+import { bfs, dfs, aStar, greedyBest } from "../../util/pathfinders";
 
 // redux
 import { createStructuredSelector } from "reselect";
@@ -41,18 +41,23 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         if (!validatePoints()) return;
         clearPath();
         let path;
+
+        setSearching(true);
         switch (options.pathfinder) {
             case PATHFINDERS.BFS:
-                setSearching(true);
                 path = await bfs();
                 break;
             case PATHFINDERS.DFS:
-                setSearching(true);
                 path = await dfs();
+                break;
+            case PATHFINDERS.A_STAR:
+                path = await aStar();
+                break;
+            case PATHFINDERS.GREEDY_BFS:
+                path = await greedyBest();
                 break;
             default:
                 break;
-
         }
         setSearching(false);
         setTruePath(path);

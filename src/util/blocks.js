@@ -8,5 +8,7 @@ export const BLOCK_TYPES = {
 
 export const PATHFINDERS = {
     BFS: "bfs",
-    DFS: "dfs"
+    DFS: "dfs",
+    A_STAR: "a_star",
+    GREEDY_BFS: "greedy_bfs"
 };
