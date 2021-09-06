@@ -48,6 +48,8 @@ const Options = ({ options, setBlockType, setPathfinder, clearObstacles, clearPa
                 >
                     <option value={PATHFINDERS.BFS}> BFS (Breadth First Search) </option>
                     <option value={PATHFINDERS.DFS}> DFS (Depth First Search) </option>
+                    <option value={PATHFINDERS.GREEDY_BFS}> Greedy BFS (Greedy Heuristic Pathfinder) </option>
+                    <option value={PATHFINDERS.A_STAR}> A* (Heuristic Pathfinder) </option>
                 </Select>
             </div>
 
