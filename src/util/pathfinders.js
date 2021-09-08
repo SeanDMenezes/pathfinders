@@ -2,9 +2,6 @@ import { setToVisit, setVisited } from "../redux/block/block-actions";
 import { store } from "../redux/store";
 import { leastF, lowerF, manhattanDistance } from "./aStarHelper";
 
-// should the final answer come square by square, or all at once?
-const staggered = true;
-
 const isVisited = (vertex, visited) => {
     for (let v of visited) {
         if (v.row === vertex.row && v.col === vertex.col) {
@@ -68,7 +65,7 @@ const traceParents = (parent) => {
     return retPath;
 }
 
-export const bfs = async () => {
+export const bfs = async (staggered = true) => {
     const { blocks } = store.getState();
     const { start, end, numCols } = blocks;
 
@@ -98,7 +95,7 @@ export const bfs = async () => {
     return [];
 }
 
-export const dfs = async () => {
+export const dfs = async (staggered = true) => {
     const { blocks } = store.getState();
     const { start, end, numCols } = blocks;
 
@@ -131,7 +128,7 @@ export const dfs = async () => {
     return [];
 }
 
-export const aStar = async () => {
+export const aStar = async (staggered = true) => {
     const { blocks } = store.getState();
     const { start, end, numCols } = blocks;
 
@@ -169,7 +166,7 @@ export const aStar = async () => {
     return [];
 }
 
-export const greedyBest = async () => {
+export const greedyBest = async (staggered = true) => {
     const { blocks } = store.getState();
     const { start, end, numCols } = blocks;
 

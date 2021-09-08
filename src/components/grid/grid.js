@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@material-ui/core";
 
+// styling
 import "./grid.scss";
+import { FaFlag, FaFlagCheckered } from 'react-icons/fa';
 
 // helpers
 import { BLOCK_TYPES, PATHFINDERS } from "../../util/blocks";
@@ -21,6 +23,9 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
     // in process of finding path?
     const [searching, setSearching] = useState(false);
 
+    // mousedown
+    const [mouseDown, setMouseDown] = useState(false);
+
     const validatePoints = () => {
         const { start, end } = blocks;
         let newErrors = {};
@@ -37,7 +42,7 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         return isValid;
     }
 
-    const findPath = async () => {
+    const findPath = async (staggered = true) => {
         if (!validatePoints()) return;
         clearPath();
         let path;
@@ -45,16 +50,16 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         setSearching(true);
         switch (options.pathfinder) {
             case PATHFINDERS.BFS:
-                path = await bfs();
+                path = await bfs(staggered);
                 break;
             case PATHFINDERS.DFS:
-                path = await dfs();
+                path = await dfs(staggered);
                 break;
             case PATHFINDERS.A_STAR:
-                path = await aStar();
+                path = await aStar(staggered);
                 break;
             case PATHFINDERS.GREEDY_BFS:
-                path = await greedyBest();
+                path = await greedyBest(staggered);
                 break;
             default:
                 break;
@@ -62,6 +67,14 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         setSearching(false);
         setTruePath(path);
         console.log(path);
+    }
+
+    const findInstantPath = async () => {
+        await findPath(false);
+    }
+
+    const findStaggeredPath = async () => {
+        await findPath(true);
     }
 
     // add block based on what block type is selected
@@ -78,7 +91,7 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
                 setEnd(newBlock);
                 break;
             case BLOCK_TYPES.OBSTACLE:
-                // make sure not to overwrite exisitng start/end block
+                // make sure not to overwrite existing start/end block
                 if (start.row === rowIdx && start.col === colIdx) break;
                 if (end.row === rowIdx && end.col === colIdx) break;
                 addObstacle(newBlock);
@@ -94,10 +107,10 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         let classes = "gridItem ";
         let val;
         if (rowIdx === start.row && colIdx === start.col) {
-            classes += "gridStart";
+            val = <FaFlag style={{ color: "lightgreen" }}/>
         }
         else if (rowIdx === end.row && colIdx === end.col) {
-            classes += "gridEnd";
+            val = <FaFlagCheckered />
         }
         else if (rowIdx === toVisit.row && colIdx === toVisit.col) {
             classes += "gridToVisit";
@@ -125,19 +138,52 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
         }
 
         return (
-            <div className={classes} key={colIdx} onClick={() => setBlock(rowIdx, colIdx)}>
+            <div className={classes} key={colIdx} onMouseDown={() => setBlock(rowIdx, colIdx)} onMouseEnter={() => handleObstacleDrag(rowIdx, colIdx)}>
                 {val}
             </div>
         );
     }
 
+    // when user clicks and drags, and obstacle selected, populate obstacles
+    const handleObstacleDrag = (rowIdx, colIdx) => {
+        if (options.blockType !== BLOCK_TYPES.OBSTACLE) {
+            return;
+        }
+        if (mouseDown) {
+            const { start, end } = blocks;
+            const newBlock = { row: rowIdx, col: colIdx };
+            if (start.row === rowIdx && start.col === colIdx) return;
+            if (end.row === rowIdx && end.col === colIdx) return;
+            // addObstacle(newBlock); <-- uncomment to enable click and drag
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("mousedown", () => setMouseDown(true));
+        return () => {
+            window.removeEventListener("mousedown", () => setMouseDown(false));
+        }
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener("mouseup", () => setMouseDown(false));
+        return () => {
+            window.removeEventListener("mouseup", () => setMouseDown(false));
+        }
+    }, []);
+
     const { numRows, numCols } = blocks;
 
     return (
         <div className="gridContainer">
-            <Button className="gridButton" onClick={findPath}>
-                Go!
-            </Button>
+            <div className="buttonContainer">
+                <Button className="gridButton" onClick={findInstantPath}>
+                    Go! (Instant)
+                </Button>
+                <Button className="gridButton" onClick={findStaggeredPath}>
+                    Go! (Staggered)
+                </Button>
+            </div>
             {numRows >= 0 && numCols >= 0 &&
             [...Array(numRows)].map((rowVal, rowIdx) => (
                 <div className="gridRow" key={rowIdx}>
