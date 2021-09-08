@@ -150,11 +150,13 @@ const Grid = ({ options, clearPath, blocks, setStart, setEnd, addObstacle, setTr
             return;
         }
         if (mouseDown) {
-            const { start, end } = blocks;
-            const newBlock = { row: rowIdx, col: colIdx };
-            if (start.row === rowIdx && start.col === colIdx) return;
-            if (end.row === rowIdx && end.col === colIdx) return;
-            // addObstacle(newBlock); <-- uncomment to enable click and drag
+            // <-- uncomment to enable click and drag -->
+            
+            // const { start, end } = blocks;
+            // const newBlock = { row: rowIdx, col: colIdx };
+            // if (start.row === rowIdx && start.col === colIdx) return;
+            // if (end.row === rowIdx && end.col === colIdx) return;
+            // addObstacle(newBlock); 
         }
     }
 
