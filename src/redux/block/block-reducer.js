@@ -35,6 +35,21 @@ const blockReducer = (state = INITIAL_STATE, action) => {
                 end: action.payload
             }
         case BLOCK_ACTION_TYPES.ADD_OBSTACLE:
+            const { obstacles } = state;
+            const { row, col } = action.payload;
+
+            // if obstacle already there, remove it
+            let newObstacles = obstacles.filter(obstacle => {
+                return !(obstacle.row === row && obstacle.col === col);
+            });
+
+            // something removed, return new list of obstacles
+            if (newObstacles.length !== obstacles.length) {
+                return {
+                    ...state,
+                    obstacles: newObstacles
+                }
+            }
             return {
                 ...state,
                 obstacles: [...state.obstacles, action.payload]
